@@ -1,0 +1,4 @@
+#Fri Mar 15 22:23:24 PYST 2024
+base.0=/home/alex/Flutter_projetos/eclub/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
