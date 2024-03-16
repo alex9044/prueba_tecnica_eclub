@@ -3,13 +3,15 @@ import 'package:eclub/app/services/expense_service.dart';
 import 'package:flutter/material.dart';
 
 class ExpenseProvider extends ChangeNotifier {
-  final ExpenseService _expenseService;
+  final ExpenseService _expenseService; // Servicio de despesas.
 
   ExpenseProvider(this._expenseService) {
-    _expenses = _expenseService.getAllExpenses();
+    _expenses =
+        _expenseService.getAllExpenses(); // Obteniendo todas las despesas.
   }
 
   final List<String> _meses = [
+    // Lista de meses.
     'Enero 2022',
     'Febrero 2022',
     'Marzo 2022',
@@ -25,6 +27,7 @@ class ExpenseProvider extends ChangeNotifier {
   ];
 
   final List<String> _categories = [
+    // Lista de categorías de despesas.
     'Restaurantes y bares',
     'Otros',
     'Entretenimiento',
@@ -34,19 +37,23 @@ class ExpenseProvider extends ChangeNotifier {
     'Salud',
   ];
 
-  List<Expense> _expenses = [];
-  int _tabIndexExpense = 0;
-  late double _entretenimientoPercentage;
-  late double _retirosPercentage;
-  late double _saludPercentage;
-  late double _transportePercentage;
-  late double _comprasPercentage;
-  late double _restaurantesYBaresPercentage;
-  late double _otrosPercentage;
-  late String _selectedCategory;
-  late Expense _selectedExpense;
-  final List<Expense> _expensesInMonthByCategory = [];
+  List<Expense> _expenses = []; // Lista de despesas.
+  int _tabIndexExpense = 0; // Índice de la pestaña seleccionada.
+  late double
+      _entretenimientoPercentage; // Porcentaje de despesas de entretenimiento.
+  late double _retirosPercentage; // Porcentaje de despesas de retiros.
+  late double _saludPercentage; // Porcentaje de despesas de salud.
+  late double _transportePercentage; // Porcentaje de despesas de transporte.
+  late double _comprasPercentage; // Porcentaje de despesas de compras.
+  late double
+      _restaurantesYBaresPercentage; // Porcentaje de despesas de restaurantes y bares.
+  late double _otrosPercentage; // Porcentaje de despesas de otras categorías.
+  late String _selectedCategory; // Categoría seleccionada.
+  late Expense _selectedExpense; // Despesa seleccionada.
+  final List<Expense> _expensesInMonthByCategory =
+      []; // Lista de despesas por mes y categoría.
 
+  // Getters
   int get tabIndexExpense => _tabIndexExpense;
   double get entretenimientoPercentage => _entretenimientoPercentage;
   double get retirosPercentage => _retirosPercentage;
@@ -62,43 +69,48 @@ class ExpenseProvider extends ChangeNotifier {
   List<Expense> get expenses => _expenses;
   List<Expense> get expenseInMonthByCategory => _expensesInMonthByCategory;
 
+  // Setters
   set selectedExpense(Expense value) {
     _selectedExpense = value;
-    notifyListeners();
+    notifyListeners(); // Notificando a los oyentes sobre el cambio en la despesa seleccionada.
   }
 
   set selectedCategoryIndex(int value) {
     _selectedCategory = _categories[value];
-    notifyListeners();
+    notifyListeners(); // Notificando a los oyentes sobre el cambio en la categoría seleccionada.
   }
 
   set selectedExpenseTabIndex(int value) {
     _tabIndexExpense = value;
-    notifyListeners();
+    notifyListeners(); // Notificando a los oyentes sobre el cambio en la pestaña seleccionada.
   }
 
+  // Método para obtener despesas por mes y categoría.
   void getExpensesByMonthAndCategory() {
-    final month = _tabIndexExpense;
+    final month = _tabIndexExpense; // Obtener el mes seleccionado.
 
-    _expensesInMonthByCategory.clear();
+    _expensesInMonthByCategory
+        .clear(); // Limpiando la lista de despesas por mes y categoría.
 
     _expensesInMonthByCategory.addAll(_expenses.where((expense) {
-      // Extrai o mês da data da despesa e verifica se corresponde ao mês fornecido
+      // Extraer el mes de la fecha de la despesa y verificar si coincide con el mes proporcionado.
       int expenseMonth = int.parse(expense.fecha.split('/')[1]);
       bool isSameMonth = expenseMonth == month + 1;
 
-      // Verifica se a categoria da despesa corresponde à categoria fornecida
+      // Verificar si la categoría de la despesa coincide con la categoría proporcionada.
       bool isSameCategory = expense.categoria == selectedCategory;
 
-      // Retorna verdadeiro se a despesa estiver no mês e na categoria corretos
+      // Devolver verdadero si la despesa está en el mes y categoría correctos.
       return isSameMonth && isSameCategory;
     }));
-    updatePercentages(_expensesInMonthByCategory);
-    notifyListeners(); // Notifica os ouvintes que a lista de despesas foi atualizada
+    updatePercentages(
+        _expensesInMonthByCategory); // Actualizar los porcentajes.
+    notifyListeners(); // Notificar a los oyentes que la lista de despesas ha sido actualizada.
   }
 
+  // Método para actualizar los porcentajes de las categorías de despesas.
   void updatePercentages(List<Expense> expenses) {
-    // Inicializa as variáveis de soma para cada categoria como zero
+    // Inicializar las variables de suma para cada categoría como cero.
     double totalEntretenimiento = 0;
     double totalRetiros = 0;
     double totalSalud = 0;
@@ -107,7 +119,7 @@ class ExpenseProvider extends ChangeNotifier {
     double totalRestaurantesYBares = 0;
     double totalOtros = 0;
 
-    // Calcula a soma dos gastos para cada categoria
+    // Calcular la suma de las despesas para cada categoría.
     for (Expense expense in expenses) {
       switch (expense.categoria) {
         case 'Entretenimiento':
@@ -133,7 +145,7 @@ class ExpenseProvider extends ChangeNotifier {
       }
     }
 
-    // Calcula o total de gastos para normalizar as porcentagens
+    // Calcular el total de despesas para normalizar los porcentajes.
     double totalExpenses = totalEntretenimiento +
         totalRetiros +
         totalSalud +
@@ -142,7 +154,7 @@ class ExpenseProvider extends ChangeNotifier {
         totalRestaurantesYBares +
         totalOtros;
 
-    // Atualiza as variáveis de porcentagem com base nas somas calculadas
+    // Actualizar los porcentajes basados en las sumas calculadas.
     _entretenimientoPercentage = totalEntretenimiento / totalExpenses;
     _retirosPercentage = totalRetiros / totalExpenses;
     _saludPercentage = totalSalud / totalExpenses;

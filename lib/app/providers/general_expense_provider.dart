@@ -3,14 +3,16 @@ import 'package:eclub/app/services/expense_service.dart';
 import 'package:flutter/material.dart';
 
 class GeneralExpenseProvider extends ChangeNotifier {
-  final ExpenseService _expenseService;
+  final ExpenseService _expenseService; // Servicio de gastos.
 
   GeneralExpenseProvider(this._expenseService) {
-    _expenses = _expenseService.getAllExpenses();
-    getExpensesByMonth();
+    _expenses =
+        _expenseService.getAllExpenses(); // Obteniendo todos los gastos.
+    getExpensesByMonth(); // Obteniendo los gastos por mes.
   }
 
   final List<String> _meses = [
+    // Lista de meses.
     'Enero 2022',
     'Febrero 2022',
     'Marzo 2022',
@@ -25,18 +27,21 @@ class GeneralExpenseProvider extends ChangeNotifier {
     'Diciembre 2022'
   ];
 
-  String _selectedMonth = 'Enero 2022';
-  List<Expense> _expenses = [];
-  int _tabIndexGeneralExpense = 0;
-  late double _entretenimientoPercentage;
-  late double _retirosPercentage;
-  late double _saludPercentage;
-  late double _transportePercentage;
-  late double _comprasPercentage;
-  late double _restaurantesYBaresPercentage;
-  late double _otrosPercentage;
-  final List<Expense> _expensesInMonth = [];
+  String _selectedMonth = 'Enero 2022'; // Mes seleccionado.
+  List<Expense> _expenses = []; // Lista de gastos.
+  int _tabIndexGeneralExpense = 0; // Índice de la pestaña seleccionada.
+  late double
+      _entretenimientoPercentage; // Porcentaje de gastos de entretenimiento.
+  late double _retirosPercentage; // Porcentaje de gastos de retiros.
+  late double _saludPercentage; // Porcentaje de gastos de salud.
+  late double _transportePercentage; // Porcentaje de gastos de transporte.
+  late double _comprasPercentage; // Porcentaje de gastos de compras.
+  late double
+      _restaurantesYBaresPercentage; // Porcentaje de gastos de restaurantes y bares.
+  late double _otrosPercentage; // Porcentaje de gastos de otras categorías.
+  final List<Expense> _expensesInMonth = []; // Lista de gastos por mes.
 
+  // Getters
   int get tabIndexGeneralExpense => _tabIndexGeneralExpense;
   double get entretenimientoPercentage => _entretenimientoPercentage;
   double get retirosPercentage => _retirosPercentage;
@@ -50,17 +55,19 @@ class GeneralExpenseProvider extends ChangeNotifier {
   List<Expense> get expenses => _expenses;
   List<Expense> get expensesInMonth => _expensesInMonth;
 
+  // Setter
   set selectedGeneralExpenseTabIndex(int value) {
     _tabIndexGeneralExpense = value;
-    notifyListeners();
+    notifyListeners(); // Notificar a los oyentes sobre el cambio en la pestaña seleccionada.
   }
 
+  // Método para obtener gastos por mes.
   void getExpensesByMonth() {
     final month = _tabIndexGeneralExpense;
-    // Limpia la lista de gastos del mes
+    // Limpiando la lista de gastos del mes.
     _expensesInMonth.clear();
 
-    // Actualiza la variable mes seleccionado
+    // Actualizando el mes seleccionado.
     _selectedMonth = meses[month].substring(0, meses[month].indexOf(' '));
 
     for (Expense expense in _expenses) {
@@ -70,12 +77,13 @@ class GeneralExpenseProvider extends ChangeNotifier {
         _expensesInMonth.add(expense);
       }
     }
-    updatePercentages(_expensesInMonth);
-    notifyListeners();
+    updatePercentages(_expensesInMonth); // Actualizar los porcentajes.
+    notifyListeners(); // Notificar a los oyentes sobre el cambio en los gastos por mes.
   }
 
+  // Método para actualizar los porcentajes de las categorías de gastos.
   void updatePercentages(List<Expense> expenses) {
-    // Inicializa as variáveis de soma para cada categoria como zero
+    // Inicializando las variables de suma para cada categoría como cero.
     double totalEntretenimiento = 0;
     double totalRetiros = 0;
     double totalSalud = 0;
@@ -84,7 +92,7 @@ class GeneralExpenseProvider extends ChangeNotifier {
     double totalRestaurantesYBares = 0;
     double totalOtros = 0;
 
-    // Calcula a soma dos gastos para cada categoria
+    // Calculando la suma de los gastos para cada categoría.
     for (Expense expense in expenses) {
       switch (expense.categoria) {
         case 'Entretenimiento':
@@ -110,7 +118,7 @@ class GeneralExpenseProvider extends ChangeNotifier {
       }
     }
 
-    // Calcula o total de gastos para normalizar as porcentagens
+    // Calculando el total de gastos para normalizar los porcentajes.
     double totalExpenses = totalEntretenimiento +
         totalRetiros +
         totalSalud +
@@ -119,7 +127,7 @@ class GeneralExpenseProvider extends ChangeNotifier {
         totalRestaurantesYBares +
         totalOtros;
 
-    // Atualiza as variáveis de porcentagem com base nas somas calculadas
+    // Actualizando los porcentajes basados en las sumas calculadas.
     _entretenimientoPercentage = totalEntretenimiento / totalExpenses;
     _retirosPercentage = totalRetiros / totalExpenses;
     _saludPercentage = totalSalud / totalExpenses;
